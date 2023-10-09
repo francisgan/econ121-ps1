@@ -24,13 +24,16 @@ Verbal: Interpret the summary statistics.
 ```{r message=FALSE, warning=FALSE}
 # The PDF will show the code you write here but not the output.
 # Load packages and dataset here.
+library(tidyverse)
+library(fixest)
+data = read.csv(url("https://github.com/tvogl/econ121/raw/main/data/ssa_names.csv"))
 
 ```
 
 ```{r echo=TRUE}
 # The PDF will show the code AND output here.
 # Summarize the data here.
-
+summary(data)
 ```
 
 \newpage
@@ -43,7 +46,14 @@ Verbal: Interpret your results.
 
 ```{r echo=TRUE}
 # All question 3 code here
+agg_data <- aggregate(frequency ~ name + sex, data, sum)
 
+# Find the most popular boy and girl names
+most_popular_boy <- agg_data[agg_data$sex == 'M',][order(-agg_data[agg_data$sex == 'M',]$frequency),][1,]
+most_popular_girl <- agg_data[agg_data$sex == 'F',][order(-agg_data[agg_data$sex == 'F',]$frequency),][1,]
+
+cat(paste("The most popular boy name is", most_popular_boy$name, "with", most_popular_boy$frequency, "babies named between 1940 and 2022.\n"))
+cat(paste("The most popular girl name is", most_popular_girl$name, "with", most_popular_girl$frequency, "babies named between 1940 and 2022.\n"))
 ```
 
 \newpage
@@ -56,7 +66,16 @@ Verbal: Interpret your results.
 
 ```{r echo=TRUE}
 # All question 4 code here
+unique_names_count <- aggregate(name ~ year + sex, data, function(x) length(unique(x)))
 
+# Plot the trends
+ggplot(unique_names_count, aes(x=year, y=name, color=sex)) +
+  geom_line() +
+  labs(title="Time Trends in Number of Unique Names by Sex",
+       x="Year",
+       y="Number of Unique Names",
+       color="Sex") +
+  theme_minimal()
 ```
 
 \newpage
